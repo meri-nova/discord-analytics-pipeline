@@ -29,30 +29,43 @@ discord_client = discord.Client(intents=intents)
 
 async def retrieve_data():
     # Retrieve data from Discord server
-    channel = discord_client.get_channel('CHANNEL_ID')
-    messages = await channel.history(limit=1).flatten()
+    channel = await discord_client.fetch_channel(CHANNEL_ID)
+    if channel is None:
+        print(f"Could not find channel with ID: {CHANNEL_ID}")
+        return
+    
+    transformed_data = []
+    async for message in channel.history(limit=10):
+        transformed_data.append({
+            'event_id': str(message.id),
+            'user_id': str(message.author.id),
+            'event_type': 'message',  
+            'attachment': str(message.attachments[0].url) if message.attachments else None,
+            'created_at': message.created_at.isoformat(),
+            'channel_name': channel.name,
+            'event_content': message.content
+        })
 
-    # Transform data as needed
-    transformed_data = [{
-        'event_id': str(message.id),
-        'user_id': str(message.author.id),
-        'event_type': 'message',  
-        'attachment': str(message.attachments[0].url) if message.attachments else None,
-        'created_at': message.created_at.isoformat(),
-        'channel_name': channel.name,
-        'event_content': message.content
-    } for message in messages]
+    print(transformed_data)
 
-    # Insert data into BigQuery
-    #print(transformed_data)
-    errors = bigquery_client.insert_rows_json(DATASET_ID, TABLE_ID, transformed_data)
+    ## Insert data into BigQuery
+    # errors = await bigquery_client.insert_rows_json(f'{DATASET_ID}.{TABLE_ID}', transformed_data)
 
     # Handle insertion errors
-    if errors:
-        print('Errors occurred during data insertion:', errors)
+    # if errors:
+    #     print('Errors occurred during data insertion:', errors)
 
-# Run the retrieval and insertion process
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.create_task(discord_client.start(DISCORD_TOKEN))
     loop.run_until_complete(retrieve_data())
+
+# async def init():
+#     discord.utils.setup_logging()
+#     client_task = asyncio.create_task(discord_client.start(DISCORD_TOKEN))
+#     await retrieve_data()
+#     await client_task
+
+
+# if __name__ == '__main__':
+#     asyncio.run(init())

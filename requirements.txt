@@ -1,4 +1,4 @@
-dotenv
+python-dotenv
 discord
 google-cloud-bigquery
 asyncio 
