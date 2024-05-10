@@ -1,4 +1,3 @@
 python-dotenv
-discord
-google-cloud-bigquery
-asyncio 
+discord 
+pandas

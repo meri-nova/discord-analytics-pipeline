@@ -1,3 +1,5 @@
 myenv/
 .env
 prefab-wave-417122-85ddfe08c0e5.json
+*.csv
+.DS_Store
