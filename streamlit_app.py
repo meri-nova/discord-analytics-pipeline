@@ -153,7 +153,7 @@ st.subheader('Top 20 Most Active Users')
 fig = px.bar(user_activity.head(20), title='Top 20 Active Users', labels={'index': 'Username', 'value': 'Message Count'}, orientation='h', color='value', color_continuous_scale='rainbow')
 st.plotly_chart(fig)
 
-# Active vs Inactive Users
+# Active vs Inactive Users (whoever bhas joined but never sent a message)
 st.subheader('Active vs. Inactive Users')
 active_inactive = {'Status': ['Active', 'Inactive'], 'Count': [active_users, total_users - active_users]}
 active_inactive_df = pd.DataFrame(active_inactive)
